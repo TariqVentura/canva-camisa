@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mover imagen en canvas con JavaScript</title>
+    <style>
+        canvas {
+            width: 300px;
+            /* Anchura del canvas */
+            height: 400px;
+            /* Altura del canvas */
+            background-color: white;
+            /* Color de fondo del canvas */
+            border: 1px solid black;
+            /* Borde del canvas */
+            transform: rotate(45deg);
+            /* Rotación para dar forma de camisa */
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="500" height="500"></canvas>
+    <button type="button" id="increase">+</button>
+    <button type="button" id="decrease">-</button>
+    <input type="file" name="" id="imageURL">
+    <script>
+
+        var canvas = document.getElementById("myCanvas")
+        var ctx = canvas.getContext("2d")
+
+        imageURL.addEventListener('change', function () {
+            var imageURL = document.getElementById('imageURL')
+
+            var image = new Image()
+            image.src = "./imagenes/" + document.getElementById('imageURL').files[0].name
+            var imageX = 0
+            var imageY = 0
+
+            var increaseImage = document.getElementById('increase')
+            var decreaseImage = document.getElementById('decrease')
+
+            decreaseImage.addEventListener('click', function () {
+                decrease()
+            })
+            increaseImage.addEventListener('click', function () {
+                increase()
+            })
+
+            function drawImage() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+                ctx.drawImage(image, 0, 0, imageX, imageY)
+            }
+
+            function increase() {
+                imageX = image.width * 2
+                imageY = image.height * 2
+                drawImage()
+            }
+
+            function decrease() {
+                imageX = image.width / 2
+                imageY = image.height / 2
+                drawImage()
+            }
+
+            image.onload = function () {
+                drawImage()
+            }
+            function handleMouseDown(e) {
+                var mouseX = e.clientX - canvas.offsetLeft;
+                var mouseY = e.clientY - canvas.offsetTop;
+
+                if (mouseX >= imageX && mouseX <= imageX + image.width &&
+                    mouseY >= imageY && mouseY <= imageY + image.height) {
+                    canvas.addEventListener("mousemove", handleMouseMove);
+                    canvas.addEventListener("mouseup", handleMouseUp);
+                }
+            }
+
+            function handleMouseMove(e) {
+                var mouseX = e.clientX - canvas.offsetLeft;
+                var mouseY = e.clientY - canvas.offsetTop;
+
+                imageX = mouseX - image.width / 2;
+                imageY = mouseY - image.height / 2;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(image, imageX, imageY);
+            }
+
+            function handleMouseUp() {
+                canvas.removeEventListener("mousemove", handleMouseMove);
+                canvas.removeEventListener("mouseup", handleMouseUp);
+            }
+
+            canvas.addEventListener("mousedown", handleMouseDown);
+        })
+    </script>
+</body>
+
+</html>
